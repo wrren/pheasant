@@ -1,6 +1,8 @@
 <?php namespace App\Http\Middleware;
 
 use Closure;
+use Request;
+use Symfony\Component\HttpFoundation\Response as BaseResponse;
 
 /**
  *	The IP Rate Limiter limits the rate at which clients can communicate
@@ -30,10 +32,12 @@ class IPRateLimiter extends RateLimiter {
 
 		if( RateLimiter::exceeded( $ip, $window, $limit ) )
 		{
-			return response( '', Response::HTTP_TOO_MANY_REQUESTS )->json( [ 'result' => 'failure', 'error' => 'rate limit exceeded'] );
+			return response()->json( [ 'result' => 'failure', 'error' => 'rate limit exceeded'], BaseResponse::HTTP_TOO_MANY_REQUESTS );
 		}
 
-		
+		RateLimiter::increment( $ip );
+
+		return $next( $request );
 	}
 
 	/**

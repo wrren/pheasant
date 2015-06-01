@@ -20,6 +20,6 @@ return [
 	'factors'	=> [ 'user', 'ip' ],
 
 	// Max requests per window
-	'limit'		=> 1000
+	'limit'		=> 10
 
 ];

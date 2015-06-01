@@ -1,6 +1,7 @@
 <?php namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Validator;
 
 /**
  *	Model for a single trade. Created when trade JSON is received through the
@@ -14,33 +15,33 @@ class Trade extends Model {
 	protected $fillable	= [ 'from_amount', 'to_amount', 'rate', 'time' ];
 	/// Don't use the Eloquent timestamps
 	public $timestamps 	= false;
-	
+
 	/**
 	 *	Get the trader that executed this trade
 	 */
 	public function trader() {
-		return $this->belongsTo( 'App\Trader', 'trader' );
+		return $this->belongsTo( 'App\Trader' );
 	}
 
 	/**
 	 *	Get the originating country for this trade
 	 */
 	public function origin() {
-		return $this->belongsTo( 'App\Origin', 'origin' );
+		return $this->belongsTo( 'App\Origin' );
 	}
 
 	/**
 	 *	Get the currency that was bought in this trade
 	 */
-	public function boughtCurrency() {
-		return $this->belongsTo( 'App\Currency', 'to_currency' );
+	public function toCurrency() {
+		return $this->belongsTo( 'App\Currency' );
 	}
 
 	/**
 	 *	Get the currency that was sold in this trade
 	 */
-	public function soldCurrency() {
-		return $this->belongsTo( 'App\Currency', 'from_currency' );
+	public function fromCurrency() {
+		return $this->belongsTo( 'App\Currency' );
 	}
 
 	/**
@@ -50,15 +51,24 @@ class Trade extends Model {
 	 */
 	public static function fromJSON( $json )
 	{
-		$obj = json_decode( $json );
+		$validator = Validator::make(	$json,
+						[ 	'userId' 		=> 'required|integer',
+							'currencyFrom'		=> 'required|size:3',
+							'currencyTo'		=> 'required|size:3',
+							'amountSell'		=> 'required|numeric',
+							'amountBuy'		=> 'required|numeric',
+							'rate'			=> 'required|numeric',
+							'timePlaced'		=> 'required',
+							'originatingCountry'	=> 'required|size:2' ] );
 
-		return ( 	property_exists( $obj, 'userId' ) 		&&
-				property_exists( $obj, 'currencyFrom' )		&&
-				property_exists( $obj, 'currencyTo' )		&&
-				property_exists( $obj, 'amountSell' )		&&
-				property_exists( $obj, 'amountBuy' )		&&
-				property_exists( $obj, 'rate' )			&&
-				property_exists( $obj, 'timePlaced' )		&&
-				property_exists( $obj, 'originatingCountry' )	) ? $obj : false;
+		if( $validator->fails() ) {
+			foreach( $validator->messages() as $message ) {
+				Log::info( "Trade Validation Failure: " . $message );
+			}
+
+			return false;
+		}
+
+		return $json;
 	}
 }

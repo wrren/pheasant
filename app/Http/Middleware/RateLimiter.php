@@ -1,6 +1,8 @@
 <?php namespace App\Http\Middleware;
 
 use Closure;
+use RedisL4;
+use Config;
 
 /**
  *	Describes the request window start time and request count for a single user
@@ -60,7 +62,7 @@ class RateLimiter {
 	 *	Default Constructor
 	 */
 	public function __construct() {
-		$this->redis = Redis::connection();
+		$this->redis = RedisL4::connection();
 	}
 
 	/**
@@ -95,7 +97,7 @@ class RateLimiter {
 	 */
 	protected function exceeded( $user, $window, $limit ) {
 		$info 	= $this->redis->get( $user );
-
+		
 		if( $info && ( $info = unserialize( $info ) ) !== FALSE )
 		{
 			if( $info->expired( $window ) )

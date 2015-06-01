@@ -6,7 +6,8 @@
 	"type": "project",
 	"require": {
 		"laravel/framework": "5.0.*",
-		"cboden/ratchet": "^0.3.3"
+		"cboden/ratchet": "^0.3.3",
+		"predis/predis": "^1.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.0",

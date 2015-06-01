@@ -1,6 +1,9 @@
 <?php namespace App\Http\Middleware;
 
 use Closure;
+use App\Http\Requests;
+use App\Trade;
+use Symfony\Component\HttpFoundation\Response as BaseResponse;
 
 /**
  *	The User Rate Limiter limits the rate at which trades can be submitted
@@ -8,7 +11,7 @@ use Closure;
  *	Users are limited to N requests per M second window, as set in 
  *	the application configuration.
  */
-class UserRateLimiter {
+class UserRateLimiter extends RateLimiter {
 
 	/**
 	 * Handle an incoming request.
@@ -24,21 +27,23 @@ class UserRateLimiter {
 			return $next( $request );
 		}
 
-		$trade = Trade::fromJSON( $request->json() );
+		$trade = Trade::fromJSON( $request->json()->all() );
 
 		if( $trade === false )
 		{
 			return $next( $request );
 		}
 
-		$user 		= $trade->userId;
+		$user 		= $trade["userId"];
 		$window 	= RateLimiter::window();
 		$limit		= RateLimiter::limit();
 
 		if( RateLimiter::exceeded( $user, $window, $limit ) )
 		{
-			return response( '', Response::HTTP_TOO_MANY_REQUESTS )->json( [ 'result' => 'failure', 'error' => 'rate limit exceeded'] );
+			return response()->json( [ 'result' => 'failure', 'error' => 'rate limit exceeded'], BaseResponse::HTTP_TOO_MANY_REQUESTS );
 		}
+
+		RateLimiter::increment( $user );
 
 		return $next( $request );
 	}
