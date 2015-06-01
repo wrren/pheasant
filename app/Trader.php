@@ -12,7 +12,8 @@ class Trader extends Model {
 	protected $table 	= 'traders';
 	/// Accessible Fields
 	protected $fillable 	= [ 'ext_id' ];
-
+	/// Don't use the Eloquent timestamps
+	public $timestamps 	= false;
 	/**
 	 *	Traders have a one-to-many relationship with trades. This
 	 *	function lets eloquent know what the child model is and

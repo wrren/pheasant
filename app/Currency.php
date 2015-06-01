@@ -11,6 +11,8 @@ class Currency extends Model {
 	protected $table 	= 'currencies';
 	/// Accessible Fields
 	protected $fillable	= [ 'name' ];
+	/// Don't use the Eloquent timestamps
+	public $timestamps 	= false;
 
 	/**
 	 *	Get all trades in in which this was the currency sold.

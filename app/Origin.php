@@ -11,6 +11,8 @@ class Origin extends Model {
 	protected $table 	= 'origins';
 	/// Accessible Fields
 	protected $fillable	= [ 'name' ];
+	/// Don't use the Eloquent timestamps
+	public $timestamps 	= false;
 
 	/**
 	 *	Get all trades that took place in this origin.

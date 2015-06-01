@@ -11,4 +11,5 @@
 |
 */
 
-Route::get('/', 'WelcomeController@index');
+Route::get( '/', 'WelcomeController@index' );
+Route::resource( 'trade', 'TradeController', [ 'only' => [ 'index', 'store', 'show' ] ] );
