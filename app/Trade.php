@@ -49,8 +49,7 @@ class Trade extends Model {
 	 * @param json	JSON String
 	 * @return 	Trade Object or false on failure
 	 */
-	public static function fromJSON( $json )
-	{
+	public static function fromJSON( $json ) {
 		$validator = Validator::make(	$json,
 						[ 	'userId' 		=> 'required|integer',
 							'currencyFrom'		=> 'required|size:3',

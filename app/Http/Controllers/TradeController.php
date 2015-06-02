@@ -9,8 +9,12 @@ use App\Currency;
 
 use Symfony\Component\HttpFoundation\Response as BaseResponse;
 use Illuminate\Http\Request;
+use RedisL4;
 
 class TradeController extends Controller {
+
+	/// Publication Channel
+	const Channel = 'trade.event';
 
 	/**
 	 * Display a list of all trades
@@ -19,6 +23,23 @@ class TradeController extends Controller {
 	public function index()
 	{
 		return response()->json( Trade::all()->toJson() );
+	}
+
+	/**
+	 *	Publish a trade event to redis so that connected web socket clients will receive it.
+	 * @param trade 	Trade Object
+	 */
+	protected function publish( Trade $trade ) {
+		$redis = RedisL4::connection();
+		$redis->publish( self::Channel, json_encode( [ 	'id'		=> $trade->id,
+								'trader'	=> $trade->trader->id,
+								'origin'	=> $trade->origin->name,
+								'from_currency'	=> $trade->fromCurrency->name,
+								'to_currency'	=> $trade->toCurrency->name,
+								'from_amount'	=> $trade->from_amount,
+								'to_amount'	=> $trade->to_amount,
+								'rate'		=> $trade->rate,
+								'time'		=> $trade->time ] ) );
 	}
 
 	/**
@@ -63,6 +84,8 @@ class TradeController extends Controller {
 		$newTrade->toCurrency()->associate( $toCurrency );
 
 		$newTrade->save();
+
+		$this->publish( $newTrade );
 
 		return response()->json( [ 'result' => 'success' ], BaseResponse::HTTP_CREATED );
 	}

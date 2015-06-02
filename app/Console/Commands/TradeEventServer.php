@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+namespace App\Console\Commands;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
@@ -20,10 +20,15 @@ class TradeEventServer implements MessageComponentInterface {
 	 *	Construct a trade event server that will subscribe to published trade
 	 *	events using the given redis handle.
 	 */
-	public function __construct( $redis ) {
+	public function __construct() {
 		$this->clients 	= new \SplObjectStorage;
-		$this->redis 	= $redis;
+	}
 
+	/**
+	 *	Initialize the redis subscription
+	 */
+	public function init( $redis ) {
+		$this->redis = $redis;
 		$this->redis->pubsub( 'trade.event', array( $this, 'onEvent' ) );
 	}
 
@@ -67,4 +72,4 @@ class TradeEventServer implements MessageComponentInterface {
 	}
 }
 
-$loop 	= React\EventLoop\Factory::create();
+?>

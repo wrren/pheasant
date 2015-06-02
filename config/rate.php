@@ -17,9 +17,9 @@ return [
 	'window' 	=> 600,
 
 	// Limiting Factors: 'user' for trader/user-based limiting, 'ip' for ip-address limiting
-	'factors'	=> [ 'user', 'ip' ],
+	'factors'	=> [],
 
 	// Max requests per window
-	'limit'		=> 10
+	'limit'		=> 1000
 
 ];
