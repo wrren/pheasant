@@ -36,7 +36,7 @@ class TradeController extends Controller {
 
 		if( $trade === false )
 		{
-			return response()->json( ['result' => 'failure', 'error' => 'malformed trade data' ], BaseResponse::HTTP_BAD_REQUEST );
+			return response()->json( ['result' => 'failure', 'error' => 'malformed trade data' ], BaseResponse::HTTP_UNPROCESSABLE_ENTITY );
 		}
 
 		$trader 		= Trader::firstOrCreate( [ 'ext_id' 	=> $trade['userId'] ] );
@@ -48,7 +48,7 @@ class TradeController extends Controller {
 
 		if( $date === false )
 		{
-			return response()->json( ['result' => 'failure', 'error' => 'malformed time value' ], BaseResponse::HTTP_BAD_REQUEST );
+			return response()->json( ['result' => 'failure', 'error' => 'malformed time value' ], BaseResponse::HTTP_UNPROCESSABLE_ENTITY );
 		}
 
 		$newTrade 		= new Trade;
@@ -64,7 +64,7 @@ class TradeController extends Controller {
 
 		$newTrade->save();
 
-		return response()->json( [ 'result' => 'success' ] );
+		return response()->json( [ 'result' => 'success' ], BaseResponse::HTTP_CREATED );
 	}
 
 	/**
